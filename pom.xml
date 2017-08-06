@@ -24,8 +24,6 @@
         </plugins>
     </build>
 
-
-
     <dependencies>
         <!--Jetty dependencies start here -->
         <dependency>

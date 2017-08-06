@@ -1,3 +1,12 @@
+/**
+ * Created by meysam on 8/6/17.
+ */
+var webSocket;
+var output = document.getElementById("output");
+var connectBtn = document.getElementById("connectBtn");
+var sendBtn = document.getElementById("sendBtn");
+var url = "ws://localhost:8080/madKing";
+
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -128,3 +137,60 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 var then = Date.now();
 reset();
 main();
+
+function connect() {
+    // open the connection if one does not exist
+    if (webSocket !== undefined
+        && webSocket.readyState !== WebSocket.CLOSED) {
+        return;
+    }
+    // Create a websocket
+    webSocket = new WebSocket(url);
+
+    webSocket.onopen = function (event) {
+        updateOutputText("Connected!");
+        connectBtn.disabled = true;
+        sendBtn.disabled = false;
+
+    };
+
+    webSocket.onmessage = function (event) {
+        updateOutput(event.data);
+    };
+
+    webSocket.onclose = function (event) {
+        updateOutputText("Connection Closed");
+        connectBtn.disabled = false;
+        sendBtn.disabled = true;
+    };
+}
+
+function send() {
+    var text = document.getElementById("input").value;
+    var uid = document.getElementById("uid").value;
+    var message = '{'
+        + '"msg" : "' + text + '",'
+        + '"uniqueId"  : "' + uid + '"'
+        + '}';
+    webSocket.send(message);
+}
+
+function closeSocket() {
+    webSocket.close();
+}
+
+function updateOutputText(text) {
+    document.getElementById("output").value += "\n" + text;
+}
+
+function updateOutput(text) {
+
+    var obj = JSON.parse(text, function (key, value) {
+        if (key == "uniqueId") {
+            document.getElementById("uid").value = value;
+            return value;
+        } else {
+            return value;
+        }});
+    document.getElementById("output").value += "\n" + text;
+}

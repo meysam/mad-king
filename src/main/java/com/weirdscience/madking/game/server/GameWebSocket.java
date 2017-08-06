@@ -5,7 +5,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,11 +22,6 @@ public class GameWebSocket {
         // unique ID from this class' hash code
         return Integer.toHexString(this.hashCode());
     }
-
-//    List<String> messages;
-//    private Connection connection;
-//    private Set users;
-//    private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
     @OnWebSocketConnect
     public void onConnect(Session session) throws IOException {
@@ -70,8 +64,6 @@ public class GameWebSocket {
         // send message to destination client
         GameWebSocket.sockets.get(destUniqueId).sendClient(String.format("{\"msg\": \"message\", \"destId\": \"%s\", \"message\": \"%s\"}",
                 destUniqueId, escapedMessage));
-        /*this.sendClient(String.format("{\"msg\": \"message\", \"destId\": \"%s\", \"message\": \"%s\"}",
-                destUniqueId, escapedMessage));*/
     }
 
     @OnWebSocketClose
@@ -102,6 +94,5 @@ public class GameWebSocket {
 
     private void sendError(String err) {
         this.sendClient(String.format("{\"msg\": \"error\", \"error\": \"%s\"}", err));
-
     }
 }

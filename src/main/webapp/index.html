@@ -1,10 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Simple Canvas Game</title>
-	</head>
-	<body>
-		<script src="js/game.js"></script>
-	</body>
+<head>
+    <meta charset="utf-8">
+    <title>Mad King</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="panel-body">
+    <div class="row">
+        <div class="form-group col-xs-3">
+            <label for="playerType">Player Type</label>
+            <select class="form-control">
+                <option value="MAD_KING">Mad King</option>
+                <option value="HERO">Hero</option>
+            </select>
+        </div>
+        <div class="form-group col-xs-3">
+            <label for="Message">Player Message</label>
+            <div>
+                <input class="form-control" type="text" id="input"/>
+            </div>
+        </div>
+        <div class="form-group col-xs-3">
+            <label for="uid">Player Id</label>
+            <div>
+                <input class="form-control" type="text" id="uid"/>
+            </div>
+        </div>
+        <div class="form-group col-xs-3">
+            <div>
+                <input class="form-control" type="button" id="connectBtn" value="CONNECT"
+                       onclick="connect()"/>
+                <input class="form-control" type="button" id="sendBtn"
+                       value="SEND" onclick="send()" disabled="true"/>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div>
+            <script src="js/game.js"></script>
+        </div>
+    </div>
+
+        <div class="form-group col-xs-12">
+            <label for="output">Output</label>
+            <textarea row="3" style="resize: none;height: 100px;width: 400px;" type="text"
+                      class="form-control" id="output"></textarea>
+        </div>
+
+</div>
+</body>
 </html>
