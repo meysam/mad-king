@@ -160,16 +160,16 @@ $(document).ready(function () {
     var updateFoe = function (eventName, value, pType) {
         var fvalue = parseFloat(value);
         if (eventName == "up") { // Player holding up
-            pType.y -= fvalue;
+            pType.y = fvalue;
         }
         if (eventName == "down") { // Player holding down
-            pType.y += fvalue;
+            pType.y = fvalue;
         }
         if (eventName == "left") { // Player holding left
-            pType.x -= fvalue;
+            pType.x = fvalue;
         }
         if (eventName == "right") { // Player holding right
-            pType.x += fvalue;
+            pType.x = fvalue;
         }
 
         // Are they touching?
