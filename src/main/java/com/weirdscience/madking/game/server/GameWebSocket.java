@@ -2,6 +2,7 @@ package com.weirdscience.madking.game.server;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.weirdscience.madking.game.dto.Event;
 import com.weirdscience.madking.game.model.Player;
 import com.weirdscience.madking.game.model.PlayerType;
 import org.eclipse.jetty.websocket.api.Session;
@@ -40,23 +41,42 @@ public class GameWebSocket {
 
         // send its Player to the client (JSON)
         this.sendClient(String.format("{\"msg\": \"connected\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\",\"ptype\": \"%s\"}}",
-                this.player.name, this.player.uid,this.player.playerType));
+                this.player.name, this.player.uid, this.player.playerType));
 
         // broadcast this new connection (with its Player) to all other connected clients
-        GameWebSocket.sockets.values().stream().forEach(s->{
-            if(s!=this){
+        GameWebSocket.sockets.values().stream().forEach(s -> {
+            if (s != this) {
                 s.sendClient(String.format("{\"msg\": \"newClient\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\",\"ptype\": \"%s\"}}",
-                        this.player.name, this.player.uid,this.player.playerType));
+                        this.player.name, this.player.uid, this.player.playerType));
             }
         });
     }
 
     @OnWebSocketMessage
     public void onText(Session session, String message) throws IOException, JSONException {
-
+        String resp="";
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        //JSON from String to Object
+
+        //Convert JSON to Event
+        Event event = mapper.readValue(message, Event.class);
+
+        switch (event.getMessage()) {
+            case "event":
+                resp = String.format("{\"msg\": \"event\",\"eventName\": \"%s\",\"value\": \"%s\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\",\"ptype\": \"%s\"}}",
+                        event.eventName,event.value,this.player.name, this.player.uid, this.player.playerType);
+                break;
+            case "reqPlay":
+                 resp = String.format("{\"msg\": \"newClient\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\",\"ptype\": \"%s\"}}",
+                        this.player.name, this.player.uid, this.player.playerType);
+                break;
+        }
+        broadcastMessage(message, mapper,resp);
+
+    }
+
+    private void broadcastMessage(String message, ObjectMapper mapper,String response) throws IOException {
+        //Convert JSON to Player
         Player player = mapper.readValue(message, Player.class);
 
         // is the destination client connected?
@@ -64,18 +84,15 @@ public class GameWebSocket {
             this.sendError(String.format("destination client %s does not exist", player));
             return;
         }
-
         // send message to destination client
         GameWebSocket gameSender = GameWebSocket.sockets.get(player);
 
         // broadcast this new connection (with its Player) to all other connected clients
-        GameWebSocket.sockets.values().stream().forEach(s->{
-            if(s!=gameSender){
-                s.sendClient(String.format("{\"msg\": \"newClient\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\",\"ptype\": \"%s\"}}",
-                        this.player.name, this.player.uid,this.player.playerType));
+        GameWebSocket.sockets.values().stream().forEach(s -> {
+            if (s != gameSender) {
+                s.sendClient(response);
             }
         });
-
     }
 
     @OnWebSocketClose

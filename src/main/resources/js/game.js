@@ -128,15 +128,48 @@ $(document).ready(function () {
     var update = function (modifier, pType) {
         if (38 in keysDown) { // Player holding up
             pType.y -= pType.speed * modifier;
+            sendEvent("up", pType.y);
         }
         if (40 in keysDown) { // Player holding down
             pType.y += pType.speed * modifier;
+            sendEvent("down", pType.y)
         }
         if (37 in keysDown) { // Player holding left
             pType.x -= pType.speed * modifier;
+            sendEvent("left", pType.x)
         }
         if (39 in keysDown) { // Player holding right
             pType.x += pType.speed * modifier;
+            sendEvent("right", pType.x)
+        }
+
+        // Are they touching?
+        if (
+            pType.x <= (hero.x + 32)
+            && hero.x <= (pType.x + 32)
+            && pType.y <= (hero.y + 32)
+            && hero.y <= (pType.y + 32)
+        ) {
+            clearInterval(endGameInterval);
+            ++herosCaught;
+            reset();
+        }
+    };
+
+    // Update game objects that receive from server
+    var updateFoe = function (eventName, value, pType) {
+        var fvalue = parseFloat(value);
+        if (eventName == "up") { // Player holding up
+            pType.y -= fvalue;
+        }
+        if (eventName == "down") { // Player holding down
+            pType.y += fvalue;
+        }
+        if (eventName == "left") { // Player holding left
+            pType.x -= fvalue;
+        }
+        if (eventName == "right") { // Player holding right
+            pType.x += fvalue;
         }
 
         // Are they touching?
@@ -233,12 +266,32 @@ $(document).ready(function () {
         || webSocket.readyState == WebSocket.CLOSED);
     }
 
+    function isExistFoe() {
+        return !(webSocket == undefined
+        || webSocket.readyState == WebSocket.CLOSED);
+    }
+
     function sendReqPlay() {
         var uid = document.getElementById("uid").value;
         var name = document.getElementById("name").value;
         var ptype = document.getElementById("playerType").value;
         var message = '{'
             + '"msg" : "reqPlay",'
+            + '"name":"' + name + '",'
+            + '"uid":"' + uid + '",'
+            + '"playerType":"' + ptype + '"'
+            + '}';
+        webSocket.send(message);
+    }
+
+    function sendEvent(eventName, value) {
+        var uid = document.getElementById("uid").value;
+        var name = document.getElementById("name").value;
+        var ptype = document.getElementById("playerType").value;
+        var message = '{'
+            + '"msg" : "event",'
+            + '"eventName" : "' + eventName + '",'
+            + '"value" : "' + value + '",'
             + '"name":"' + name + '",'
             + '"uid":"' + uid + '",'
             + '"playerType":"' + ptype + '"'
@@ -258,12 +311,13 @@ $(document).ready(function () {
     function updateOutput(text) {
         var message = JSON.parse(text);
         if (message.msg == "newClient") {
+            onlineplayer.removeAttribute("option");
             var option = document.createElement("option");
             option.value = message.player.uid;
             option.text = message.player.name;
             onlineplayer.add(option);
             playBtn.disabled = false;
-        } else {
+        } else if (message.msg == "connected") {
             JSON.parse(text, function (key, value) {
                 if (key == "player") {
                     document.getElementById("name").value = value.name;
@@ -274,6 +328,13 @@ $(document).ready(function () {
                     return value;
                 }
             });
+        } else if (message.msg == "event") {
+            if (message.player.ptype == "MAD_KING")
+                updateFoe(message.eventName, message.value, madKing);
+            else
+                updateFoe(message.eventName, message.value, mKing);
+            render();
+
         }
         output.value += "\n" + text;
         output.scrollTop = output.scrollHeight;
