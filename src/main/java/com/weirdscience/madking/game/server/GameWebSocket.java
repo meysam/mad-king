@@ -1,5 +1,7 @@
 package com.weirdscience.madking.game.server;
 
+import com.weirdscience.madking.game.model.Player;
+import com.weirdscience.madking.game.model.PlayerType;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -14,9 +16,9 @@ import java.util.HashMap;
 @WebSocket
 public class GameWebSocket {
 
-    private final static HashMap<String, GameWebSocket> sockets = new HashMap<>();
+    private final static HashMap<Player, GameWebSocket> sockets = new HashMap<>();
     private Session session;
-    private String clientUniqueId;
+    private Player player;
 
     private String getClientUniqueId() {
         // unique ID from this class' hash code
@@ -28,25 +30,23 @@ public class GameWebSocket {
         // save session so we can send
         this.session = session;
 
-        // this unique ID
-        this.clientUniqueId = this.getClientUniqueId();
+        int size = GameWebSocket.sockets.size();
+        this.player = new Player(this.getClientUniqueId(), "Player " + String.valueOf(size + 1), size % 2 == 0 ? PlayerType.HERO : PlayerType.MAD_KING);
 
-        // map this unique ID to this connection
-        GameWebSocket.sockets.put(this.clientUniqueId, this);
+        // map this Player to this connection
+        GameWebSocket.sockets.put(this.player, this);
 
-        // send its unique ID to the client (JSON)
-        this.sendClient(String.format("{\"msg\": \"uniqueId\", \"uniqueId\": \"%s\"}",
-                this.clientUniqueId));
+        // send its Player to the client (JSON)
+        this.sendClient(String.format("{\"msg\": \"connected\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\"}}",
+                this.player.name, this.player.uid));
 
-        // broadcast this new connection (with its unique ID) to all other connected clients
-        for (GameWebSocket dstSocket : GameWebSocket.sockets.values()) {
-            if (dstSocket == this) {
-                // skip me
-                continue;
+        // broadcast this new connection (with its Player) to all other connected clients
+        GameWebSocket.sockets.values().stream().forEach(s->{
+            if(s!=this){
+                s.sendClient(String.format("{\"msg\": \"newClient\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\"}}",
+                        s.player.name, s.player.uid));
             }
-            dstSocket.sendClient(String.format("{\"msg\": \"newClient\", \"newClientId\": \"%s\"}",
-                    this.clientUniqueId));
-        }
+        });
     }
 
     @OnWebSocketMessage
@@ -68,9 +68,9 @@ public class GameWebSocket {
 
     @OnWebSocketClose
     public void onClose(Session session, int status, String reason) {
-        if (GameWebSocket.sockets.containsKey(this.clientUniqueId)) {
+        if (GameWebSocket.sockets.containsKey(this.player)) {
             // remove connection
-            GameWebSocket.sockets.remove(this.clientUniqueId);
+            GameWebSocket.sockets.remove(this.player);
 
             // broadcast this lost connection to all other connected clients
             for (GameWebSocket dstSocket : GameWebSocket.sockets.values()) {
@@ -79,7 +79,7 @@ public class GameWebSocket {
                     continue;
                 }
                 dstSocket.sendClient(String.format("{\"msg\": \"lostClient\", \"lostClientId\": \"%s\"}",
-                        this.clientUniqueId));
+                        this.player.uid));
             }
         }
     }

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Mad King</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style type="text/css">
+        body {
+            background-color: #d1e9be;
+        }
+
+        .container {
+            margin: 0 auto;
+            display: block;
+        }
+
+        .SplashScreen, .FinishScreen {
+            margin: 0 auto;
+            text-align: center;
+            width: 600px;
+            height: 450px;
+            border: 2px solid black;
+            background-color: #8db370;
+        }
+
+        canvas {
+            border: 1px solid #000;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* Game Starting Menu Screen */
+        #gamestartscreen {
+            padding-top: 250px;
+            text-align: center;
+        }
+
+        #gamestartscreen img {
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        #playscreen {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="form-group col-md-3">
+                <label for="uid">Player Name</label>
+                <div>
+                    <input readonly type="text" hidden id="uid"/>
+                    <input class="form-control" type="text" id="name"/>
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="onlinePlayer">Online Player</label>
+                <select id="onlinePlayer" class="form-control">
+                    <option value="MAD_KING">Mad King</option>
+                    <option value="HERO">Hero</option>
+                </select>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="Message">Player Message</label>
+                <div>
+                    <input class="form-control" type="text" id="input"/>
+                </div>
+            </div>
+
+            <div class="form-group col-md-3">
+                <div>
+                    <input class="form-control" type="button" id="connectBtn" value="CONNECT"/>
+                    <input class="form-control" type="button" id="sendBtn" value="SEND" disabled="true"/>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="SplashScreen">
+                    <h1>Mad King</h1>
+
+                    <input id="startBtn" class="StartButton" type="button" value="Start"/>
+                </div>
+                <div class="FinishScreen" style="display:none;">
+                    <h1>Game Over</h1>
+                    <p>Your score was: <span id="score"></span></p>
+                    <input class="StartButton" type="button" value="Restart"/>
+                </div>
+                <canvas id="canvasArea" width="512" height="480" style="display:none;">hi</canvas>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="output">Output</label>
+                <textarea row="3" style="resize: none;height: 100px;width: 400px;" type="text"
+                          class="form-control" id="output" wrap=on readonly></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/game.js"></script>
+</body>
+</html>

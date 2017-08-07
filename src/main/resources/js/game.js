@@ -1,16 +1,7 @@
 /**
  * Created by meysam on 8/6/17.
  */
-
 $(document).ready(function () {
-
-    $(".StartButton").click(function () {
-        $(".SplashScreen").hide();
-        $(".FinishScreen").hide();
-        $("#canvasArea").show();
-        clearInterval(endGameInterval);
-        init();
-    });
 
     var webSocket;
     var output = document.getElementById("output");
@@ -19,6 +10,7 @@ $(document).ready(function () {
     var url = "ws://localhost:8080/madKing";
     var timeleft = 60;
     var endGameInterval;
+    var onlineplayer = document.getElementById("onlinePlayer");
 
 // Game objects
     var madKing = {
@@ -44,6 +36,28 @@ $(document).ready(function () {
     var heroReady = false;
     var heroImage = new Image();
     var then = Date.now();
+
+    $(".StartButton").click(function () {
+        $(".SplashScreen").hide();
+        $(".FinishScreen").hide();
+        clearInterval(endGameInterval);
+        if (isConnected()) {
+            $("#canvasArea").show();
+            init();
+        } else {
+            alert('You are not yet connected');
+            $(".SplashScreen").show();
+        }
+    });
+
+    $("#connectBtn").click(function () {
+        connect();
+    });
+
+    $("#sendBtn").click(function () {
+        send();
+    });
+
 
     function init() {
         herosCaught = 0;
@@ -77,8 +91,7 @@ $(document).ready(function () {
         var w = window;
         requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
-// Let's play this game!
-
+        // Let's play this game!
         reset();
         main();
     }
@@ -96,7 +109,7 @@ $(document).ready(function () {
         hero.y = 32 + (Math.random() * (canvas.height - 64));
     };
 
-// Update game objects
+    // Update game objects
     var update = function (modifier) {
         if (38 in keysDown) { // Player holding up
             madKing.y -= madKing.speed * modifier;
@@ -124,7 +137,7 @@ $(document).ready(function () {
         }
     };
 
-// Draw everything
+    // Draw everything
     var render = function () {
         if (bgReady) {
             ctx.drawImage(bgImage, 0, 0);
@@ -146,7 +159,7 @@ $(document).ready(function () {
         ctx.fillText("Hero caught: " + herosCaught, 32, 32);
     };
 
-// The main game loop
+    // The main game loop
     var main = function () {
         var now = Date.now();
         var delta = now - then;
@@ -159,6 +172,7 @@ $(document).ready(function () {
         requestAnimationFrame(main);
     };
 
+    // End the game when the player is game over(mad king couldn't kill any hero)
     function endGame() {
         $("#canvasArea").hide();
         $("#score").text(herosCaught);
@@ -192,6 +206,11 @@ $(document).ready(function () {
         };
     }
 
+    function isConnected() {
+        return !(webSocket == undefined
+        || webSocket.readyState == WebSocket.CLOSED);
+    }
+
     function send() {
         var text = document.getElementById("input").value;
         var uid = document.getElementById("uid").value;
@@ -207,21 +226,29 @@ $(document).ready(function () {
     }
 
     function updateOutputText(text) {
-        document.getElementById("output").value += "\n" + text;
+        output.value += "\n" + text;
+        output.scrollTop = output.scrollHeight;
     }
 
     function updateOutput(text) {
-
-        var obj = JSON.parse(text, function (key, value) {
-            if (key == "uniqueId") {
-                document.getElementById("uid").value = value;
-                return value;
-            } else {
-                return value;
-            }
-        });
-        document.getElementById("output").value += "\n" + text;
+        var message = JSON.parse(text);
+        if (message.msg == "newClient") {
+            var option = document.createElement("option");
+            option.value = message.player.uid;
+            option.text = message.player.name;
+            onlineplayer.add(option);
+        } else {
+            JSON.parse(text, function (key, value) {
+                if (key == "player") {
+                    document.getElementById("name").value = value.name;
+                    document.getElementById("uid").value = value.uid;
+                    return value;
+                } else {
+                    return value;
+                }
+            });
+        }
+        output.value += "\n" + text;
+        output.scrollTop = output.scrollHeight;
     }
-
-
 });
