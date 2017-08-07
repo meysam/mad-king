@@ -3,6 +3,7 @@
  */
 $(document).ready(function () {
 
+    /*=====D: All variables :D=====*/
     var webSocket;
     var output = document.getElementById("output");
     var connectBtn = document.getElementById("connectBtn");
@@ -37,6 +38,7 @@ $(document).ready(function () {
 // Mad King image
     var madKingReady = false;
     var madKingImage = new Image();
+    // Monkey King image
     var mKingReady = false;
     var mKingImage = new Image();
 // Hero image
@@ -65,6 +67,13 @@ $(document).ready(function () {
         sendReqPlay();
     });
 
+    $("#sendBtn").click(function () {
+       var chatMsg= document.getElementById("chatMsg").value;
+        sendEvent("chat", chatMsg);
+        updateOutputText(chatMsg);
+    });
+
+    /*===== All func for canvas =====*/
 
     function init() {
         herosCaught = 0;
@@ -234,6 +243,9 @@ $(document).ready(function () {
         $(".FinishScreen").show();
     }
 
+
+    /*===== All func for web socket =====*/
+
     function connect() {
         // open the connection if one does not exist
         if (webSocket !== undefined
@@ -328,12 +340,14 @@ $(document).ready(function () {
                     return value;
                 }
             });
-        } else if (message.msg == "event") {
+        } else if (message.msg == "event" && message.eventName != "chat") {
             if (message.player.ptype == "MAD_KING")
                 updateFoe(message.eventName, message.value, madKing);
             else
                 updateFoe(message.eventName, message.value, mKing);
             render();
+
+        } else if (message.msg == "event" && message.eventName == "chat") {
 
         }
         output.value += "\n" + text;

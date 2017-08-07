@@ -11,7 +11,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,11 +21,6 @@ public class GameWebSocket {
     private final static HashMap<Player, GameWebSocket> sockets = new HashMap<>();
     private Session session;
     private Player player;
-
-    private String getClientUniqueId() {
-        // unique ID from this class' hash code
-        return Integer.toHexString(this.hashCode());
-    }
 
     @OnWebSocketConnect
     public void onConnect(Session session) throws IOException {
@@ -75,6 +69,25 @@ public class GameWebSocket {
 
     }
 
+    @OnWebSocketClose
+    public void onClose(Session session, int status, String reason) {
+        if (GameWebSocket.sockets.containsKey(this.player)) {
+            // remove connection
+            GameWebSocket.sockets.remove(this.player);
+
+            // broadcast this lost connection to all other connected clients
+            for (GameWebSocket dstSocket : GameWebSocket.sockets.values()) {
+                if (dstSocket == this) {
+                    // skip me
+                    continue;
+                }
+                dstSocket.sendClient(String.format("{\"msg\": \"lostClient\", \"lostClientId\": \"%s\"}",
+                        this.player.uid));
+            }
+        }
+    }
+
+    //Broadcast a message to other sessions
     private void broadcastMessage(String message, ObjectMapper mapper,String response) throws IOException {
         //Convert JSON to Player
         Player player = mapper.readValue(message, Player.class);
@@ -95,30 +108,19 @@ public class GameWebSocket {
         });
     }
 
-    @OnWebSocketClose
-    public void onClose(Session session, int status, String reason) {
-        if (GameWebSocket.sockets.containsKey(this.player)) {
-            // remove connection
-            GameWebSocket.sockets.remove(this.player);
-
-            // broadcast this lost connection to all other connected clients
-            for (GameWebSocket dstSocket : GameWebSocket.sockets.values()) {
-                if (dstSocket == this) {
-                    // skip me
-                    continue;
-                }
-                dstSocket.sendClient(String.format("{\"msg\": \"lostClient\", \"lostClientId\": \"%s\"}",
-                        this.player.uid));
-            }
-        }
-    }
-
+    //Send a message to current session
     private void sendClient(String str) {
         try {
             this.session.getRemote().sendString(str);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    //Generate an unique id for a player
+    private String getClientUniqueId() {
+        // unique ID from this class' hash code
+        return Integer.toHexString(this.hashCode());
     }
 
     private void sendError(String err) {
