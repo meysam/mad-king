@@ -56,15 +56,20 @@
                 <label for="uid">Player Name</label>
                 <div>
                     <input readonly type="text" hidden id="uid"/>
+                    <input readonly type="text" hidden id="playerType"/>
                     <input class="form-control" type="text" id="name"/>
                 </div>
             </div>
             <div class="form-group col-md-3">
                 <label for="onlinePlayer">Online Player</label>
                 <select id="onlinePlayer" class="form-control">
-                    <option value="MAD_KING">Mad King</option>
-                    <option value="HERO">Hero</option>
                 </select>
+            </div>
+            <div class="form-group col-md-1">
+                <label for="onlinePlayer"> </label>
+                <div>
+                    <input class="form-control" type="button" id="playBtn" value="PLAY" disabled="true"/>
+                </div>
             </div>
             <div class="form-group col-md-3">
                 <label for="Message">Player Message</label>

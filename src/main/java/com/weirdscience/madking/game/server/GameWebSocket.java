@@ -1,5 +1,7 @@
 package com.weirdscience.madking.game.server;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weirdscience.madking.game.model.Player;
 import com.weirdscience.madking.game.model.PlayerType;
 import org.eclipse.jetty.websocket.api.Session;
@@ -31,20 +33,20 @@ public class GameWebSocket {
         this.session = session;
 
         int size = GameWebSocket.sockets.size();
-        this.player = new Player(this.getClientUniqueId(), "Player " + String.valueOf(size + 1), size % 2 == 0 ? PlayerType.HERO : PlayerType.MAD_KING);
+        this.player = new Player(this.getClientUniqueId(), "Player " + String.valueOf(size + 1), size % 2 == 0 ? PlayerType.MAD_KING : PlayerType.MONKEY_KING);
 
         // map this Player to this connection
         GameWebSocket.sockets.put(this.player, this);
 
         // send its Player to the client (JSON)
-        this.sendClient(String.format("{\"msg\": \"connected\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\"}}",
-                this.player.name, this.player.uid));
+        this.sendClient(String.format("{\"msg\": \"connected\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\",\"ptype\": \"%s\"}}",
+                this.player.name, this.player.uid,this.player.playerType));
 
         // broadcast this new connection (with its Player) to all other connected clients
         GameWebSocket.sockets.values().stream().forEach(s->{
             if(s!=this){
-                s.sendClient(String.format("{\"msg\": \"newClient\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\"}}",
-                        s.player.name, s.player.uid));
+                s.sendClient(String.format("{\"msg\": \"newClient\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\",\"ptype\": \"%s\"}}",
+                        this.player.name, this.player.uid,this.player.playerType));
             }
         });
     }
@@ -52,18 +54,28 @@ public class GameWebSocket {
     @OnWebSocketMessage
     public void onText(Session session, String message) throws IOException, JSONException {
 
-        JSONObject jsonMessage = new JSONObject(message);
-        String destUniqueId = jsonMessage.get("uniqueId").toString();
-        String escapedMessage = "Hi";
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //JSON from String to Object
+        Player player = mapper.readValue(message, Player.class);
 
         // is the destination client connected?
-        if (!GameWebSocket.sockets.containsKey(destUniqueId)) {
-            this.sendError(String.format("destination client %s does not exist", destUniqueId));
+        if (!GameWebSocket.sockets.containsKey(player)) {
+            this.sendError(String.format("destination client %s does not exist", player));
             return;
         }
+
         // send message to destination client
-        GameWebSocket.sockets.get(destUniqueId).sendClient(String.format("{\"msg\": \"message\", \"destId\": \"%s\", \"message\": \"%s\"}",
-                destUniqueId, escapedMessage));
+        GameWebSocket gameSender = GameWebSocket.sockets.get(player);
+
+        // broadcast this new connection (with its Player) to all other connected clients
+        GameWebSocket.sockets.values().stream().forEach(s->{
+            if(s!=gameSender){
+                s.sendClient(String.format("{\"msg\": \"newClient\",\"player\": {\"name\": \"%s\",\"uid\": \"%s\",\"ptype\": \"%s\"}}",
+                        this.player.name, this.player.uid,this.player.playerType));
+            }
+        });
+
     }
 
     @OnWebSocketClose

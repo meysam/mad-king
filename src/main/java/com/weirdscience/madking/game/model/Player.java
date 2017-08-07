@@ -9,16 +9,14 @@ public class Player {
     public String name;
     public PlayerType playerType;
 
+    public Player() {
+    }
+
     public Player(String uid, String name, PlayerType playerType) {
         this.name = name;
         this.uid = uid;
         this.playerType = playerType;
 
-    }
-
-    @Override
-    public String toString() {
-        return name + "," + uid + "," + playerType.name();
     }
 
     @Override

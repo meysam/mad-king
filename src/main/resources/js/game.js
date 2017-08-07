@@ -6,14 +6,19 @@ $(document).ready(function () {
     var webSocket;
     var output = document.getElementById("output");
     var connectBtn = document.getElementById("connectBtn");
+    var playBtn = document.getElementById("playBtn");
     var sendBtn = document.getElementById("sendBtn");
     var url = "ws://localhost:8080/madKing";
     var timeleft = 60;
     var endGameInterval;
     var onlineplayer = document.getElementById("onlinePlayer");
+    var playerType;
 
 // Game objects
     var madKing = {
+        speed: 256 // movement in pixels per second
+    };
+    var mKing = {
         speed: 256 // movement in pixels per second
     };
     var hero = {};
@@ -32,6 +37,8 @@ $(document).ready(function () {
 // Mad King image
     var madKingReady = false;
     var madKingImage = new Image();
+    var mKingReady = false;
+    var mKingImage = new Image();
 // Hero image
     var heroReady = false;
     var heroImage = new Image();
@@ -54,8 +61,8 @@ $(document).ready(function () {
         connect();
     });
 
-    $("#sendBtn").click(function () {
-        send();
+    $("#playBtn").click(function () {
+        sendReqPlay();
     });
 
 
@@ -71,6 +78,11 @@ $(document).ready(function () {
             madKingReady = true;
         };
         madKingImage.src = "images/madKing.png";
+
+        mKingImage.onload = function () {
+            mKingReady = true;
+        };
+        mKingImage.src = "images/monkey-king.png";
 
 
         heroImage.onload = function () {
@@ -100,9 +112,12 @@ $(document).ready(function () {
     var reset = function () {
         endGameInterval = setInterval(function () {
             endGame()
-        }, 5000);
+        }, 8000000);
         madKing.x = canvas.width / 2;
         madKing.y = canvas.height / 2;
+
+        mKing.x = canvas.width / 3;
+        mKing.y = canvas.height / 3;
 
         // Throw the hero somewhere on the screen randomly
         hero.x = 32 + (Math.random() * (canvas.width - 64));
@@ -110,26 +125,26 @@ $(document).ready(function () {
     };
 
     // Update game objects
-    var update = function (modifier) {
+    var update = function (modifier, pType) {
         if (38 in keysDown) { // Player holding up
-            madKing.y -= madKing.speed * modifier;
+            pType.y -= pType.speed * modifier;
         }
         if (40 in keysDown) { // Player holding down
-            madKing.y += madKing.speed * modifier;
+            pType.y += pType.speed * modifier;
         }
         if (37 in keysDown) { // Player holding left
-            madKing.x -= madKing.speed * modifier;
+            pType.x -= pType.speed * modifier;
         }
         if (39 in keysDown) { // Player holding right
-            madKing.x += madKing.speed * modifier;
+            pType.x += pType.speed * modifier;
         }
 
         // Are they touching?
         if (
-            madKing.x <= (hero.x + 32)
-            && hero.x <= (madKing.x + 32)
-            && madKing.y <= (hero.y + 32)
-            && hero.y <= (madKing.y + 32)
+            pType.x <= (hero.x + 32)
+            && hero.x <= (pType.x + 32)
+            && pType.y <= (hero.y + 32)
+            && hero.y <= (pType.y + 32)
         ) {
             clearInterval(endGameInterval);
             ++herosCaught;
@@ -147,6 +162,10 @@ $(document).ready(function () {
             ctx.drawImage(madKingImage, madKing.x, madKing.y);
         }
 
+        if (mKingReady) {
+            ctx.drawImage(mKingImage, mKing.x, mKing.y);
+        }
+
         if (heroReady) {
             ctx.drawImage(heroImage, hero.x, hero.y);
         }
@@ -161,10 +180,13 @@ $(document).ready(function () {
 
     // The main game loop
     var main = function () {
+        playerType = document.getElementById("playerType").value;
         var now = Date.now();
         var delta = now - then;
-
-        update(delta / 1000);
+        if (playerType == "MAD_KING")
+            update(delta / 1000, madKing);
+        else
+            update(delta / 1000, mKing);
         render();
 
         then = now;
@@ -211,12 +233,15 @@ $(document).ready(function () {
         || webSocket.readyState == WebSocket.CLOSED);
     }
 
-    function send() {
-        var text = document.getElementById("input").value;
+    function sendReqPlay() {
         var uid = document.getElementById("uid").value;
+        var name = document.getElementById("name").value;
+        var ptype = document.getElementById("playerType").value;
         var message = '{'
-            + '"msg" : "' + text + '",'
-            + '"uniqueId"  : "' + uid + '"'
+            + '"msg" : "reqPlay",'
+            + '"name":"' + name + '",'
+            + '"uid":"' + uid + '",'
+            + '"playerType":"' + ptype + '"'
             + '}';
         webSocket.send(message);
     }
@@ -237,11 +262,13 @@ $(document).ready(function () {
             option.value = message.player.uid;
             option.text = message.player.name;
             onlineplayer.add(option);
+            playBtn.disabled = false;
         } else {
             JSON.parse(text, function (key, value) {
                 if (key == "player") {
                     document.getElementById("name").value = value.name;
                     document.getElementById("uid").value = value.uid;
+                    document.getElementById("playerType").value = value.ptype;
                     return value;
                 } else {
                     return value;
