@@ -3,49 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>Mad King</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <style type="text/css">
-        body {
-            background-color: #d1e9be;
-        }
-
-        .container {
-            margin: 0 auto;
-            display: block;
-        }
-
-        .SplashScreen, .FinishScreen {
-            margin: 0 auto;
-            text-align: center;
-            width: 600px;
-            height: 450px;
-            border: 2px solid black;
-            background-color: #8db370;
-        }
-
-        canvas {
-            border: 1px solid #000;
-            margin: 0 auto;
-            display: block;
-        }
-
-        /* Game Starting Menu Screen */
-        #gamestartscreen {
-            padding-top: 250px;
-            text-align: center;
-        }
-
-        #gamestartscreen img {
-            margin: 10px;
-            cursor: pointer;
-        }
-
-        #playscreen {
-            background-color: red;
-        }
-    </style>
 </head>
 <body>
 <div class="container">
@@ -96,7 +57,7 @@
                     <p>Your score was: <span id="score"></span></p>
                     <input class="StartButton" type="button" value="Restart"/>
                 </div>
-                <canvas id="canvasArea" width="512" height="480" style="display:none;">hi</canvas>
+                <canvas id="canvasArea" class="display-none game-box" width="512" height="480" style="display:none;">hi</canvas>
             </div>
             <div class="form-group col-md-4">
                 <label for="output">Output</label>

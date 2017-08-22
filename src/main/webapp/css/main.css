@@ -1,0 +1,23 @@
+body {
+    background-color: #d1e9be;
+}
+
+.container {
+    margin: 0 auto;
+    display: block;
+}
+
+.SplashScreen, .FinishScreen {
+    margin: 0 auto;
+    text-align: center;
+    width: 600px;
+    height: 450px;
+    border: 2px solid black;
+    background-color: #8db370;
+}
+
+canvas {
+    border: 1px solid #000;
+    margin: 0 auto;
+    display: block;
+}
