@@ -7,17 +7,37 @@ body {
     display: block;
 }
 
-.SplashScreen, .FinishScreen {
+.game-screen {
     margin: 0 auto;
     text-align: center;
-    width: 600px;
-    height: 450px;
     border: 2px solid black;
     background-color: #8db370;
 }
 
-canvas {
+.canvas-game {
     border: 1px solid #000;
     margin: 0 auto;
+}
+
+.box-game {
+    width: 512px;
+    height: 480px;
+}
+
+.display-none {
+    display: none;
+}
+
+.display-block {
     display: block;
 }
+
+.resize-none {
+    resize: none;
+}
+
+.box-output {
+    height: 400px !important;
+    width: 400px !important;
+}
+
