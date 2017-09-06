@@ -21,12 +21,12 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
                 <!--<configuration>-->
-                    <!--<webAppSourceDirectory>${project.basedir}/src/resources</webAppSourceDirectory>-->
-                    <!--<webApp>-->
-                        <!--<contextPath>/</contextPath>-->
-                        <!--&lt;!&ndash;<descriptor>${project.basedir}/src/over/here/web.xml</descriptor>&ndash;&gt;-->
-                        <!--&lt;!&ndash;<jettyEnvXml>${project.basedir}/src/over/here/jetty-env.xml</jettyEnvXml>&ndash;&gt;-->
-                    <!--</webApp>-->
+                <!--<webAppSourceDirectory>${project.basedir}/src/resources</webAppSourceDirectory>-->
+                <!--<webApp>-->
+                <!--<contextPath>/</contextPath>-->
+                <!--&lt;!&ndash;<descriptor>${project.basedir}/src/over/here/web.xml</descriptor>&ndash;&gt;-->
+                <!--&lt;!&ndash;<jettyEnvXml>${project.basedir}/src/over/here/jetty-env.xml</jettyEnvXml>&ndash;&gt;-->
+                <!--</webApp>-->
                 <!--</configuration>-->
             </plugin>
         </plugins>
@@ -49,8 +49,6 @@
 
         <!--Jetty Websocket server side dependencies start here -->
 
-
-
         <!--Jetty JSR-356 Websocket server side dependency -->
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
@@ -65,12 +63,9 @@
             <version>${jetty.version}</version>
         </dependency>
 
-
         <!--Jetty Websocket server dependencies end here -->
 
         <!--Jetty Websocket client side dependencies start here -->
-
-
 
         <!--JSR-356 Websocket client side depencency  -->
         <dependency>
