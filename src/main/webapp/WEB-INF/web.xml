@@ -5,7 +5,7 @@
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
 
-    <!-- Servlets -->
+    <!-- Servlet -->
     <servlet>
         <servlet-name>madServlet</servlet-name>
         <servlet-class>com.weirdscience.madking.game.server.GameWebSocketServlet</servlet-class>
