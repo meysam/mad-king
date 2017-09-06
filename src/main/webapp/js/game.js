@@ -1,18 +1,27 @@
 /**
  * Created by meysam on 8/6/17.
  */
-$(document).ready(function () {
+(function () {
 
     /*=====D: All variables :D=====*/
     var webSocket;
+
+    // Elements
     var output = document.getElementById("output");
     var connectBtn = document.getElementById("connectBtn");
     var playBtn = document.getElementById("playBtn");
     var sendBtn = document.getElementById("sendBtn");
+    var startBtn = document.getElementById("startBtn");
+    var playBtn = document.getElementById("playBtn");
+    var splash = document.getElementById("splash");
+    var finish = document.getElementById("finish");
+    var canvas = document.getElementById("canvas");
+    var score = document.getElementById("score");
+    var onlineplayer = document.getElementById("onlinePlayer");
+
     var url = "ws://localhost:8080/madKing";
     var timeleft = 60;
     var endGameInterval;
-    var onlineplayer = document.getElementById("onlinePlayer");
     var playerType;
 
 // Game objects
@@ -27,10 +36,9 @@ $(document).ready(function () {
 // Handle keyboard controls
     var keysDown = {};
 //Canvas stuff
-    var canvas = $("#canvasArea")[0];
     var ctx = canvas.getContext("2d");
-    var w = $("#canvasArea").width();
-    var h = $("#canvasArea").height();
+    var w = canvas.width;
+    var h = canvas.height;
 
 // Background image
     var bgReady = false;
@@ -46,32 +54,33 @@ $(document).ready(function () {
     var heroImage = new Image();
     var then = Date.now();
 
-    $(".StartButton").click(function () {
-        $(".SplashScreen").hide();
-        $(".FinishScreen").hide();
+
+    startBtn.onclick = function () {
+        addClass(splash, 'display-none');
+        addClass(finish, 'display-none');
         clearInterval(endGameInterval);
         if (isConnected()) {
-            $("#canvasArea").show();
+            removeClass(canvas, 'display-none');
             init();
         } else {
             alert('You are not yet connected');
-            $(".SplashScreen").show();
+            removeClass(splash, 'display-none')
         }
-    });
+    };
 
-    $("#connectBtn").click(function () {
+    connectBtn.onclick = function () {
         connect();
-    });
+    };
 
-    $("#playBtn").click(function () {
+    playBtn.onclick = function () {
         sendReqPlay();
-    });
+    };
 
-    $("#sendBtn").click(function () {
-       var chatMsg= document.getElementById("chatMsg").value;
+    sendBtn.onclick = function () {
+        var chatMsg = document.getElementById("chatMsg").value;
         sendEvent("chat", chatMsg);
         updateOutputText(chatMsg);
-    });
+    };
 
     /*===== All func for canvas =====*/
 
@@ -238,9 +247,9 @@ $(document).ready(function () {
 
     // End the game when the player is game over(mad king couldn't kill any hero)
     function endGame() {
-        $("#canvasArea").hide();
-        $("#score").text(herosCaught);
-        $(".FinishScreen").show();
+        addClass(canvas, 'display-none');
+        score.innerHTML = herosCaught;
+        removeClass(finish, 'display-none');
     }
 
 
@@ -353,4 +362,16 @@ $(document).ready(function () {
         output.value += "\n" + text;
         output.scrollTop = output.scrollHeight;
     }
-});
+
+    function addClass(el, classNameToAdd) {
+        el.className += ' ' + classNameToAdd;
+    }
+
+    function removeClass(el, classNameToRemove) {
+        var elClass = ' ' + el.className + ' ';
+        while (elClass.indexOf(' ' + classNameToRemove + ' ') !== -1) {
+            elClass = elClass.replace(' ' + classNameToRemove + ' ', '');
+        }
+        el.className = elClass;
+    }
+})();
