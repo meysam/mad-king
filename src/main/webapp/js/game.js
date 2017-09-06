@@ -37,8 +37,8 @@
     var keysDown = {};
 //Canvas stuff
     var ctx = canvas.getContext("2d");
-    var w = canvas.width;
-    var h = canvas.height;
+    canvas.width=512;
+    canvas.height=480;
 
 // Background image
     var bgReady = false;
