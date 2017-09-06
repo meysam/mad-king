@@ -6,7 +6,7 @@
 **How to use it ?**
 
 ```
-- mvn jetty:run
+- mvn clean install jetty:run
 - Open a browser and go to http://localhost:8080/
 ```
 
