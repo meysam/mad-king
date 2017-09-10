@@ -1,6 +1,8 @@
 /**
  * Created by meysam on 8/6/17.
  */
+import * as util from 'modules/util.js';
+
 (function () {
 
     /*=====D: All variables :D=====*/
@@ -37,8 +39,8 @@
     var keysDown = {};
 //Canvas stuff
     var ctx = canvas.getContext("2d");
-    canvas.width=512;
-    canvas.height=480;
+    canvas.width = 512;
+    canvas.height = 480;
 
 // Background image
     var bgReady = false;
@@ -56,15 +58,16 @@
 
 
     startBtn.onclick = function () {
-        addClass(splash, 'display-none');
-        addClass(finish, 'display-none');
+        util.addClass(splash, 'display-none');
+        util.addClass(finish, 'display-none');
         clearInterval(endGameInterval);
         if (isConnected()) {
-            removeClass(canvas, 'display-none');
+
+            util.removeClass(canvas, 'display-none');
             init();
         } else {
             alert('You are not yet connected');
-            removeClass(splash, 'display-none')
+            util.removeClass(splash, 'display-none')
         }
     };
 
@@ -247,9 +250,9 @@
 
     // End the game when the player is game over(mad king couldn't kill any hero)
     function endGame() {
-        addClass(canvas, 'display-none');
+        util.addClass(canvas, 'display-none');
         score.innerHTML = herosCaught;
-        removeClass(finish, 'display-none');
+        util.removeClass(finish, 'display-none');
     }
 
 
@@ -363,7 +366,7 @@
         output.scrollTop = output.scrollHeight;
     }
 
-    function addClass(el, classNameToAdd) {
+/*    function addClass(el, classNameToAdd) {
         el.className += ' ' + classNameToAdd;
     }
 
@@ -373,5 +376,5 @@
             elClass = elClass.replace(' ' + classNameToRemove + ' ', '');
         }
         el.className = elClass;
-    }
+    }*/
 })();
