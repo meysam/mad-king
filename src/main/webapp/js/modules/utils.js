@@ -1,6 +1,3 @@
-/**
- * Created by meysam on 8/6/17.
- */
 export function addClass(el, className) {
     el.className += ' ' + className;
 };

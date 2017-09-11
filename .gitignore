@@ -7,3 +7,8 @@ bin
 .DS_Store
 *.iml
 /.idea
+vendor
+node_modules/
+src/main/resources/
+src/main/webapp/vendor/
+src/test/

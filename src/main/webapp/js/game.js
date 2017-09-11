@@ -1,7 +1,4 @@
-/**
- * Created by meysam on 8/6/17.
- */
-import * as util from 'modules/util.js';
+import * as util from './modules/utils.js';
 
 (function () {
 
@@ -122,7 +119,7 @@ import * as util from 'modules/util.js';
 
         // Cross-browser support for requestAnimationFrame
         var w = window;
-        requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+        w.requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
         // Let's play this game!
         reset();
@@ -366,15 +363,15 @@ import * as util from 'modules/util.js';
         output.scrollTop = output.scrollHeight;
     }
 
-/*    function addClass(el, classNameToAdd) {
-        el.className += ' ' + classNameToAdd;
-    }
+    /*    function addClass(el, classNameToAdd) {
+     el.className += ' ' + classNameToAdd;
+     }
 
-    function removeClass(el, classNameToRemove) {
-        var elClass = ' ' + el.className + ' ';
-        while (elClass.indexOf(' ' + classNameToRemove + ' ') !== -1) {
-            elClass = elClass.replace(' ' + classNameToRemove + ' ', '');
-        }
-        el.className = elClass;
-    }*/
+     function removeClass(el, classNameToRemove) {
+     var elClass = ' ' + el.className + ' ';
+     while (elClass.indexOf(' ' + classNameToRemove + ' ') !== -1) {
+     elClass = elClass.replace(' ' + classNameToRemove + ' ', '');
+     }
+     el.className = elClass;
+     }*/
 })();

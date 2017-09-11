@@ -1,0 +1,5 @@
+{
+  "directory": "src/main/webapp/vendor",
+  "json": "bower.json",
+  "allow_root": true
+}
