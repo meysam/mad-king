@@ -1,4 +1,5 @@
 import * as util from './modules/utils.js';
+import {Player, Message} from './classes/player.js';
 
 (function () {
 
@@ -17,6 +18,7 @@ import * as util from './modules/utils.js';
     var canvas = document.getElementById("canvas");
     var score = document.getElementById("score");
     var onlineplayer = document.getElementById("onlinePlayer");
+    var player;
 
     var url = "ws://localhost:8080/madKing";
     var timeleft = 60;
@@ -306,18 +308,8 @@ import * as util from './modules/utils.js';
     }
 
     function sendEvent(eventName, value) {
-        var uid = document.getElementById("uid").value;
-        var name = document.getElementById("name").value;
-        var ptype = document.getElementById("playerType").value;
-        var message = '{'
-            + '"msg" : "event",'
-            + '"eventName" : "' + eventName + '",'
-            + '"value" : "' + value + '",'
-            + '"name":"' + name + '",'
-            + '"uid":"' + uid + '",'
-            + '"playerType":"' + ptype + '"'
-            + '}';
-        webSocket.send(message);
+        var message = new Message('event',eventName,value, document.getElementById("uid").value, document.getElementById("name").value, document.getElementById("playerType").value);
+        webSocket.send(message.toString());
     }
 
     function closeSocket() {
@@ -341,9 +333,8 @@ import * as util from './modules/utils.js';
         } else if (message.msg == "connected") {
             JSON.parse(text, function (key, value) {
                 if (key == "player") {
-                    document.getElementById("name").value = value.name;
-                    document.getElementById("uid").value = value.uid;
-                    document.getElementById("playerType").value = value.ptype;
+                    player = new Player(value.uid, value.name, value.ptype);
+                    player.addToElements();
                     return value;
                 } else {
                     return value;
@@ -362,16 +353,4 @@ import * as util from './modules/utils.js';
         output.value += "\n" + text;
         output.scrollTop = output.scrollHeight;
     }
-
-    /*    function addClass(el, classNameToAdd) {
-     el.className += ' ' + classNameToAdd;
-     }
-
-     function removeClass(el, classNameToRemove) {
-     var elClass = ' ' + el.className + ' ';
-     while (elClass.indexOf(' ' + classNameToRemove + ' ') !== -1) {
-     elClass = elClass.replace(' ' + classNameToRemove + ' ', '');
-     }
-     el.className = elClass;
-     }*/
 })();
