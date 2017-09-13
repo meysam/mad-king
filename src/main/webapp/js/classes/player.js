@@ -16,7 +16,7 @@ class Player {
     }
 }
 
-class Message extends Player {
+class PlayerDto extends Player {
     constructor(message, eventName, value, uid, name, playerType) {
         super(uid, name, playerType);
         this.message = message;
@@ -36,5 +36,5 @@ class Message extends Player {
     }
 }
 
-export{Player, Message}
+export{Player, PlayerDto}
 

@@ -1,5 +1,5 @@
 import * as util from './modules/utils.js';
-import {Player, Message} from './classes/player.js';
+import {Player, PlayerDto} from './classes/player.js';
 
 (function () {
 
@@ -308,8 +308,8 @@ import {Player, Message} from './classes/player.js';
     }
 
     function sendEvent(eventName, value) {
-        var message = new Message('event',eventName,value, document.getElementById("uid").value, document.getElementById("name").value, document.getElementById("playerType").value);
-        webSocket.send(message.toString());
+        var playerDto = new PlayerDto('event',eventName,value, document.getElementById("uid").value, document.getElementById("name").value, document.getElementById("playerType").value);
+        webSocket.send(playerDto.toString());
     }
 
     function closeSocket() {
